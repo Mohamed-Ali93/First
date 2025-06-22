@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>UserManagment</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="9.2.0" />
+    <ProjectReference Include="..\UserManagment.Application.Contracts\UserManagment.Application.Contracts.csproj" />
+    <PackageReference Include="Volo.Abp.Identity.HttpApi" Version="9.2.0" />
+  </ItemGroup>
+</Project>

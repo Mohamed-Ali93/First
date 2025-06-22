@@ -1,0 +1,12 @@
+{
+  "name": "@user-managment",
+  "version": "0.0.1",
+  "dependencies": {
+    "@abp/ng.core": "~9.2.0",
+    "@abp/ng.oauth": "~9.2.0",
+    "@abp/ng.theme.shared": "~9.2.0",
+    "@abp/ng.components":"~9.2.0",
+    "@volo/abp.commercial.ng.ui": "~9.2.0",
+    "tslib": "^2.1.0"
+  }
+}
