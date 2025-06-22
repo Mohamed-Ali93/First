@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\First.Domain\First.Domain.csproj" />
+    <ProjectReference Include="..\..\usermanagment\src\UserManagment.EntityFrameworkCore\UserManagment.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

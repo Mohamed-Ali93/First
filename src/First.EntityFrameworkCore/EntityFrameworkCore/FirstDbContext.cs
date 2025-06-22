@@ -15,6 +15,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using UserManagment.EntityFrameworkCore;
 
 namespace First.EntityFrameworkCore;
 
@@ -80,6 +81,7 @@ public class FirstDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
+        builder.ConfigureUserManagment();
         
         builder.Entity<Book>(b =>
         {

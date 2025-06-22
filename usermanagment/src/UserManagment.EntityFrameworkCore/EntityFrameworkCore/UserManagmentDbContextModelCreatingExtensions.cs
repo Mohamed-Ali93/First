@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
+using Volo.Abp.Identity;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace UserManagment.EntityFrameworkCore;
 
@@ -9,6 +12,14 @@ public static class UserManagmentDbContextModelCreatingExtensions
         this ModelBuilder builder)
     {
         Check.NotNull(builder, nameof(builder));
+
+        // Map extended user properties as real columns
+        builder.Entity<IdentityUser>(b =>
+        {
+            b.Property<DateTime?>("LastLoginTime").HasColumnName("LastLoginTime");
+            b.Property<int>("LoginAttemptCount").HasColumnName("LoginAttemptCount").HasDefaultValue(0);
+            b.Property<int>("UserStatus").HasColumnName("UserStatus").HasDefaultValue(0); // Assuming enum is stored as int
+        });
 
         /* Configure all entities here. Example:
 
