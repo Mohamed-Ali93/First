@@ -5,13 +5,16 @@ import { RouterOutletComponent } from '@abp/ng.core';
 const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
     component: RouterOutletComponent,
     children: [
       {
         path: '',
         loadComponent: () =>
           import('./components/user-managment.component').then(m => m.UserManagmentComponent),
+      },
+      {
+        path: 'security-logs',
+        loadComponent: () => import('./components/security-logs.component').then(m => m.SecurityLogsComponent),
       },
     ],
   },

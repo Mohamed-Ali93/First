@@ -1,0 +1,141 @@
+<div class="security-logs-pro-container">
+    <div class="card shadow-sm">
+      <!-- Header -->
+      <div class="card-header bg-white border-bottom">
+        <!-- Title Row -->
+        <div class="mb-3">
+          <i class="fas fa-shield-alt text-primary mr-2"></i>
+          <h2 class="h5 d-inline align-middle">Security Logs</h2>
+        </div>
+  
+        <!-- Search Form Row -->
+        <form (ngSubmit)="search()" class="row">
+          <div class="form-group col-md-2 mb-2">
+            <label for="userName" class="form-label mb-0">User Name</label>
+            <input id="userName" [(ngModel)]="filter.userName" name="userName" class="form-control form-control-sm" placeholder="User Name" />
+          </div>
+          <div class="form-group col-md-2 mb-2">
+            <label for="action" class="form-label mb-0">Action</label>
+            <input id="action" [(ngModel)]="filter.action" name="action" class="form-control form-control-sm" placeholder="Action" />
+          </div>
+          <div class="form-group col-md-2 mb-2">
+            <label for="clientIpAddress" class="form-label mb-0">IP Address</label>
+            <input id="clientIpAddress" [(ngModel)]="filter.clientIpAddress" name="clientIpAddress" class="form-control form-control-sm" placeholder="IP Address" />
+          </div>
+          <div class="form-group col-md-2 mb-2">
+            <label for="startTime" class="form-label mb-0">Start Date</label>
+            <div class="input-group input-group-sm">
+              <input id="startTime" [(ngModel)]="filter.startTime" name="startTime" type="date" class="form-control" aria-label="Start Date" />
+              <button type="button" class="btn btn-outline-secondary" (click)="filter.startTime = null" tabindex="-1" title="Clear">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group col-md-2 mb-2">
+            <label for="endTime" class="form-label mb-0">End Date</label>
+            <div class="input-group input-group-sm">
+              <input id="endTime" [(ngModel)]="filter.endTime" name="endTime" type="date" class="form-control" aria-label="End Date" />
+              <button type="button" class="btn btn-outline-secondary" (click)="filter.endTime = null" tabindex="-1" title="Clear">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group col-md-2 mb-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-sm btn-secondary w-100 d-flex align-items-center justify-content-center">
+              <i class="fas fa-search mr-1"></i> Search
+            </button>
+          </div>
+        </form>
+          
+      </div>
+  
+      <!-- Body -->
+      <div class="card-body p-0 position-relative">
+        <div *ngIf="loading" class="loading-overlay">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+        <div *ngIf="error" class="alert alert-danger m-3">{{ error }}</div>
+  
+        <div class="table-responsive">
+          <table class="table table-hover table-bordered mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th (click)="sort('userName')" class="sortable">User Name <i [ngClass]="sortIcon('userName')"></i></th>
+                <th (click)="sort('action')" class="sortable">Action <i [ngClass]="sortIcon('action')"></i></th>
+                <th (click)="sort('clientIpAddress')" class="sortable">IP Address <i [ngClass]="sortIcon('clientIpAddress')"></i></th>
+                <th (click)="sort('browserInfo')" class="sortable">Browser <i [ngClass]="sortIcon('browserInfo')"></i></th>
+                <th (click)="sort('creationTime')" class="sortable">Time <i [ngClass]="sortIcon('creationTime')"></i></th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let log of logs">
+                <td>{{ log.userName }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.clientIpAddress }}</td>
+                <td>{{ log.browserInfo }}</td>
+                <td>{{ log.creationTime | date:'short' }}</td>
+                <td><button class="btn btn-link btn-sm p-0" (click)="showDetails(log)"><i class="fas fa-eye"></i></button></td>
+              </tr>
+              <tr *ngIf="!loading && logs.length === 0">
+                <td colspan="6" class="text-center text-muted">No security logs found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Footer -->
+      <div class="card-footer d-flex flex-wrap justify-content-between align-items-center bg-white border-top">
+        <div>
+          <button (click)="prevPage()" [disabled]="filter.skipCount === 0 || loading" class="btn btn-outline-secondary btn-sm mr-2">Previous</button>
+          <button (click)="nextPage()" [disabled]="(page + 1) * filter.maxResultCount >= totalCount || loading" class="btn btn-outline-secondary btn-sm">Next</button>
+          <span class="ml-3">Page {{ page + 1 }} of {{ totalPages }}</span>
+        </div>
+        <div class="text-muted small">Total: {{ totalCount }}</div>
+      </div>
+    </div>
+  
+    <!-- Modal -->
+    <div class="modal fade show" tabindex="-1" *ngIf="selectedLog" style="display: block; background: rgba(0,0,0,0.2);">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Security Log Details</h5>
+            <button type="button" class="close" (click)="closeDetails()"><span>&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <dl class="row">
+              <dt class="col-sm-3">User Name</dt>
+              <dd class="col-sm-9">{{ selectedLog.userName }}</dd>
+              <dt class="col-sm-3">Action</dt>
+              <dd class="col-sm-9">{{ selectedLog.action }}</dd>
+              <dt class="col-sm-3">IP Address</dt>
+              <dd class="col-sm-9">{{ selectedLog.clientIpAddress }}</dd>
+              <dt class="col-sm-3">Browser</dt>
+              <dd class="col-sm-9">{{ selectedLog.browserInfo }}</dd>
+              <dt class="col-sm-3">Time</dt>
+              <dd class="col-sm-9">{{ selectedLog.creationTime | date:'full' }}</dd>
+              <dt class="col-sm-3">Application Name</dt>
+              <dd class="col-sm-9">{{ selectedLog.applicationName }}</dd>
+              <dt class="col-sm-3">Tenant</dt>
+              <dd class="col-sm-9">{{ selectedLog.tenantName }}</dd>
+              <dt class="col-sm-3">Client Id</dt>
+              <dd class="col-sm-9">{{ selectedLog.clientId }}</dd>
+              <dt class="col-sm-3">Correlation Id</dt>
+              <dd class="col-sm-9">{{ selectedLog.correlationId }}</dd>
+              <dt class="col-sm-3">Extra Properties</dt>
+              <dd class="col-sm-9"><pre>{{ selectedLog.extraProperties | json }}</pre></dd>
+            </dl>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDetails()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="selectedLog" class="modal-backdrop fade show"></div>
+  </div>
+  

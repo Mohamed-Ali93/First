@@ -4,7 +4,10 @@ import { UserManagmentService } from '../services/user-managment.service';
 @Component({
   standalone: true,
   selector: 'lib-user-managment',
-  template: ` <p>user-managment works!</p> `,
+  template: `
+    <h1>User Management Root Works!</h1>
+    <p>This is the default page for the User Management module.</p>
+  `,
 })
 export class UserManagmentComponent {
   protected readonly service = inject(UserManagmentService);

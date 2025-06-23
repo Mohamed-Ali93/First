@@ -21,6 +21,13 @@ export function configureRoutes(routesService: RoutesService) {
         layout: eLayoutType.application,
         order: 3,
       },
+      {
+        path: '/user-managment/security-logs',
+        name: 'Security Logs',
+        parentName: eUserManagmentRouteNames.UserManagment,
+        order: 1,
+        iconClass: 'fas fa-shield-alt',
+      },
     ]);
   };
 }
