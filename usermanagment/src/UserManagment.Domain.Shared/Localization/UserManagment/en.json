@@ -2,6 +2,7 @@
   "culture": "en",
   "texts": {
     "MyAccount":  "My account",
-    "SamplePageMessage": "A sample page for the UserManagment module"
+    "SamplePageMessage": "A sample page for the UserManagment module",
+    "Permission:SecurityLogs": "Security Logs"
   }
 }

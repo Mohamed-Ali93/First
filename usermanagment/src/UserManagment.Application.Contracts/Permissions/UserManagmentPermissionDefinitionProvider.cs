@@ -9,6 +9,7 @@ public class UserManagmentPermissionDefinitionProvider : PermissionDefinitionPro
     public override void Define(IPermissionDefinitionContext context)
     {
         var myGroup = context.AddGroup(UserManagmentPermissions.GroupName, L("Permission:UserManagment"));
+        myGroup.AddPermission(UserManagmentPermissions.SecurityLogs, L("Permission:SecurityLogs"));
     }
 
     private static LocalizableString L(string name)
