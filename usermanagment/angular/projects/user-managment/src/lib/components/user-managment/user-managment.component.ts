@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { UserManagmentService } from '../services/user-managment.service';
+import { UserManagmentService } from '../../services/user-managment.service';
 
 @Component({
   standalone: true,
@@ -10,7 +10,7 @@ import { UserManagmentService } from '../services/user-managment.service';
   `,
 })
 export class UserManagmentComponent {
-  protected readonly service = inject(UserManagmentService);
+  protected readonly service = inject(UserManagmentService) as UserManagmentService;
 
   constructor() {
     this.service.sample().subscribe(console.log);

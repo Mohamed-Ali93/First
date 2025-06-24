@@ -1,0 +1,106 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">Roles</h5>
+  </div>
+  <div class="card-body">
+    <div *ngIf="loading" class="text-center my-3">
+      <span>Loading...</span>
+    </div>
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+    <div *ngIf="!loading && !error">
+      <div class="mb-3">
+        <button class="btn btn-primary" (click)="addRole()">
+          <i class="fa fa-plus me-2"></i> Create Role
+        </button>
+      </div>
+
+      <!-- Modal (Angular controlled) -->
+      <div *ngIf="isModalVisible" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form (ngSubmit)="saveRole()" [formGroup]="roleForm">
+              <div class="modal-header">
+                <h5 class="modal-title">{{ editingRole ? 'Edit Role' : 'Create Role' }}</h5>
+                <button type="button" class="btn-close" (click)="isModalVisible = false" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="roleName" class="form-label">Role Name</label>
+                  <input id="roleName" class="form-control" formControlName="name" required />
+                </div>
+                <div class="form-check mb-2">
+                  <input id="isDefault" type="checkbox" class="form-check-input" formControlName="isDefault" />
+                  <label for="isDefault" class="form-check-label">Is Default</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input id="isPublic" type="checkbox" class="form-check-input" formControlName="isPublic" />
+                  <label for="isPublic" class="form-check-label">Is Public</label>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="isModalVisible = false">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="roleForm.invalid">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bootstrap Table -->
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Is Default</th>
+            <th>Is Public</th>
+            <th>User Count</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let role of roles">
+            <td>{{ role.name }}</td>
+            <td>
+              <span *ngIf="role.isDefault" class="badge bg-success">Yes</span>
+              <span *ngIf="!role.isDefault" class="badge bg-secondary">No</span>
+            </td>
+            <td>
+              <span *ngIf="role.isPublic" class="badge bg-success">Yes</span>
+              <span *ngIf="!role.isPublic" class="badge bg-secondary">No</span>
+            </td>
+            <td>{{ role.userCount ?? 0 }}</td>
+            <td>
+              <div class="dropdown" [class.show]="role.dropdownOpen">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" (click)="toggleDropdown(role)">
+                  Actions
+                </button>
+                <ul class="dropdown-menu" [class.show]="role.dropdownOpen">
+                  <li><a class="dropdown-item" (click)="editRole(role); role.dropdownOpen = false">Edit</a></li>
+                  <li><a class="dropdown-item text-danger" (click)="deleteRole(role); role.dropdownOpen = false">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paging (simple) -->
+      <nav *ngIf="totalCount > pageSize">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="page === 1">
+            <a class="page-link" (click)="pageChanged(page - 1)" href="javascript:void(0)">Previous</a>
+          </li>
+          <li class="page-item" [class.active]="page === i"
+              *ngFor="let i of [].constructor(Math.ceil(totalCount / pageSize)); let idx = index">
+            <a class="page-link" (click)="pageChanged(idx + 1)" href="javascript:void(0)">{{ idx + 1 }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="page === Math.ceil(totalCount / pageSize)">
+            <a class="page-link" (click)="pageChanged(page + 1)" href="javascript:void(0)">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div> 

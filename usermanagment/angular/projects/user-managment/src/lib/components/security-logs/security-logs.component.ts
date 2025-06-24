@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass, CommonModule } from '@angular/common';
-import { SecurityLogsService } from '../services/security-logs.service';
-import { SecurityLogDto, GetSecurityLogInput } from '../models/security-log.model';
+import { SecurityLogsService } from '../../services/security-logs.service';
+import { SecurityLogDto, GetSecurityLogInput } from '../../models/security-log.model';
 
 @Component({
   selector: 'lib-security-logs',

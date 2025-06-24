@@ -15,4 +15,11 @@ export class UserManagmentService {
       { apiName: this.apiName }
     );
   }
+
+  getRolesWithUserCount() {
+    return this.restService.request<void, any>({
+      method: 'GET',
+      url: '/api/user-managment/roles-with-user-count',
+    }, { apiName: this.apiName });
+  }
 }

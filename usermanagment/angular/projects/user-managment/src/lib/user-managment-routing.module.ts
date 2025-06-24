@@ -10,11 +10,15 @@ const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./components/user-managment.component').then(m => m.UserManagmentComponent),
+          import('./components/user-managment/user-managment.component').then(m => m.UserManagmentComponent),
       },
       {
         path: 'security-logs',
-        loadComponent: () => import('./components/security-logs.component').then(m => m.SecurityLogsComponent),
+        loadComponent: () => import('./components/security-logs/security-logs.component').then(m => m.SecurityLogsComponent),
+      },
+      {
+        path: 'roles-with-user-count',
+        loadComponent: () => import('./components/roles-with-user-count/roles-with-user-count.component').then(m => m.RolesWithUserCountComponent),
       },
     ],
   },

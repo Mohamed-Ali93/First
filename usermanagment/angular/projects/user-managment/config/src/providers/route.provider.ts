@@ -28,6 +28,13 @@ export function configureRoutes(routesService: RoutesService) {
         order: 1,
         iconClass: 'fas fa-shield-alt',
       },
+      {
+        path: '/user-managment/roles-with-user-count',
+        name: 'Roles With User Count',
+        parentName: eUserManagmentRouteNames.UserManagment,
+        order: 2,
+        iconClass: 'fas fa-users',
+      },
     ]);
   };
 }
