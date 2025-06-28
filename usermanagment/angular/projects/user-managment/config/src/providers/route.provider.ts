@@ -35,6 +35,13 @@ export function configureRoutes(routesService: RoutesService) {
         order: 2,
         iconClass: 'fas fa-users',
       },
+      {
+        path: '/user-managment/custom-role',
+        name: 'Custom Role',
+        parentName: eUserManagmentRouteNames.UserManagment,
+        order: 3,
+        iconClass: 'fas fa-user-tag',
+      },
     ]);
   };
 }
