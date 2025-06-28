@@ -125,5 +125,34 @@ namespace UserManagment.Users
                 throw;
             }
         }
+
+        public async Task MoveAllUsersToRoleAsync(MoveAllUsersToRoleDto input)
+        {
+            try
+            {
+                var sourceRole = await _roleRepository.GetAsync(Guid.Parse(input.SourceRoleId));
+                var targetRole = await _roleRepository.GetAsync(Guid.Parse(input.TargetRoleId));
+                var users = await _userRepository.GetListAsync(roleId: sourceRole.Id);
+                foreach (var user in users)
+                {
+                    var isInTargetRole = await _userManager.IsInRoleAsync(user, targetRole.Name);
+                    if (!isInTargetRole)
+                    {
+                        var result = await _userManager.AddToRoleAsync(user, targetRole.Name);
+                        if (!result.Succeeded)
+                        {
+                            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                            _logger.LogWarning($"Failed to add user {user.UserName} to role {targetRole.Name}: {errors}");
+                        }
+                    }
+                }
+                _logger.LogInformation("Moved all users from role {SourceRole} to role {TargetRole}", sourceRole.Name, targetRole.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error moving all users from role {SourceRoleId} to role {TargetRoleId}: {Message}", input.SourceRoleId, input.TargetRoleId, ex.Message);
+                throw;
+            }
+        }
     }
 } 

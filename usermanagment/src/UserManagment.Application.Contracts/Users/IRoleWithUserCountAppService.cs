@@ -5,6 +5,12 @@ using Volo.Abp.Identity;
 
 namespace UserManagment.Users
 {
+    public class MoveAllUsersToRoleDto
+    {
+        public string SourceRoleId { get; set; }
+        public string TargetRoleId { get; set; }
+    }
+
     public interface IRoleWithUserCountAppService : IApplicationService
     {
         Task<List<RoleWithUserCountDto>> GetListAsync();
@@ -14,5 +20,6 @@ namespace UserManagment.Users
         
         // Specific functionality: Move user from one role to another (keeping in both roles)
         Task MoveUserToRoleAsync(MoveUserToRoleDto input);
+        Task MoveAllUsersToRoleAsync(MoveAllUsersToRoleDto input);
     }
 } 

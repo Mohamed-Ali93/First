@@ -44,5 +44,14 @@ namespace UserManagment.Users
         {
             return _service.MoveUserToRoleAsync(input);
         }
+
+        // Move all users from one role to another (keeping them in both roles)
+        [HttpPost]
+        [Route("move-all-users-to-role")]
+        [Authorize(Permissions.UserManagmentPermissions.UserRoleManagement)]
+        public Task MoveAllUsersToRoleAsync([FromBody] MoveAllUsersToRoleDto input)
+        {
+            return _service.MoveAllUsersToRoleAsync(input);
+        }
     }
 } 

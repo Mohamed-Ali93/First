@@ -8,7 +8,7 @@ import {
   generateFormFromProps,
 } from '@abp/ng.components/extensible';
 import { Component, inject, Injector, OnInit, AfterViewInit } from '@angular/core';
-import { UntypedFormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, FormBuilder, Validators, FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { eIdentityComponents } from '@volo/abp.ng.identity';
 import { CommonModule } from '@angular/common';
@@ -34,7 +34,8 @@ import { UserManagmentService } from '../../../../services/user-managment.servic
     LocalizationModule,
     IdentityModule,
     NgbDropdownModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   templateUrl: './custom-role.component.html',
   styleUrls: ['./custom-role.component.scss'],
@@ -72,6 +73,11 @@ export class CustomRoleComponent implements OnInit, AfterViewInit {
   loadingUserCounts = false;
 
   permissionManagementKey = ePermissionManagementComponents.PermissionManagement;
+
+  moveAllModalVisible = false;
+  moveAllSourceRole: IdentityRoleDto | null = null;
+  moveAllTargetRoleId: string = '';
+  moveAllBusy = false;
 
   onVisiblePermissionChange = (event: boolean) => {
     this.visiblePermissions = event;
@@ -188,6 +194,30 @@ export class CustomRoleComponent implements OnInit, AfterViewInit {
     const { prop, dir } = data.sorts[0];
     this.list.sortKey = prop;
     this.list.sortOrder = dir;
+  }
+
+  openMoveAllUsersModal(sourceRole: IdentityRoleDto) {
+    this.moveAllSourceRole = sourceRole;
+    this.moveAllTargetRoleId = '';
+    this.moveAllModalVisible = true;
+  }
+
+  moveAllUsersToRole() {
+    if (!this.moveAllSourceRole || !this.moveAllTargetRoleId) return;
+    this.moveAllBusy = true;
+    this.userManagmentService.moveAllUsersToRole({
+      sourceRoleId: this.moveAllSourceRole.id!,
+      targetRoleId: this.moveAllTargetRoleId
+    }).pipe(finalize(() => this.moveAllBusy = false)).subscribe({
+      next: () => {
+        this.toasterService.success('All users moved to target role!');
+        this.moveAllModalVisible = false;
+        this.list.get();
+      },
+      error: () => {
+        this.toasterService.error('Failed to move all users.');
+      }
+    });
   }
 }
 

@@ -47,4 +47,12 @@ export class UserManagmentService {
       { apiName: this.apiName }
     );
   }
+
+  // Move all users from one role to another (keeping them in both roles)
+  moveAllUsersToRole(input: { sourceRoleId: string, targetRoleId: string }) {
+    return this.restService.request<any, void>(
+      { method: 'POST', url: '/api/user-managment/roles-with-user-count/move-all-users-to-role', body: input },
+      { apiName: this.apiName }
+    );
+  }
 }

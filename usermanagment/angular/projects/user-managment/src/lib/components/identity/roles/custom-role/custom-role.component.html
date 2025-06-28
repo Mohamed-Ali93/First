@@ -30,6 +30,7 @@
                   <button ngbDropdownItem class="custom-dropdown-item" (click)="edit(item.id)"><i class="fa fa-edit me-2"></i>Edit</button>
                   <button ngbDropdownItem class="custom-dropdown-item" (click)="openPermissionsModal(item.id)"><i class="fa fa-key me-2"></i>Permissions</button>
                   <button ngbDropdownItem class="custom-dropdown-item text-danger" (click)="delete(item.id, item.name)"><i class="fa fa-trash me-2"></i>Delete</button>
+                  <button ngbDropdownItem class="custom-dropdown-item text-primary" (click)="openMoveAllUsersModal(item)"><i class="fa fa-users me-2"></i>Move All Users</button>
                 </div>
               </div>
             </td>
@@ -107,4 +108,38 @@
     [hideBadges]="true"
   >
   </abp-permission-management>
+
+  <!-- Move All Users Modal -->
+  <div *ngIf="moveAllModalVisible" class="modal custom-modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Move All Users from Role: {{ moveAllSourceRole?.name }}</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="moveAllModalVisible = false"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="moveAllTargetRole" class="form-label">Target Role</label>
+            <select id="moveAllTargetRole" class="form-select" [(ngModel)]="moveAllTargetRoleId" name="moveAllTargetRoleId" required>
+              <option value="">Select a target role</option>
+              <option *ngFor="let role of data.items" [value]="role.id" [disabled]="role.id === moveAllSourceRole?.id">
+                {{ role.name }}
+              </option>
+            </select>
+          </div>
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle me-2"></i>
+            All users in <b>{{ moveAllSourceRole?.name }}</b> will be added to the selected target role. Users will remain in the source role.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary custom-btn" (click)="moveAllModalVisible = false" [disabled]="moveAllBusy">Cancel</button>
+          <button type="button" class="btn btn-primary custom-btn" (click)="moveAllUsersToRole()" [disabled]="moveAllBusy || !moveAllTargetRoleId">
+            <span *ngIf="moveAllBusy" class="spinner-border spinner-border-sm me-1"></span>
+            Move All Users
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </abp-page>
