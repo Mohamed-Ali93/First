@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { RestService } from '@abp/ng.core';
 
+export interface MoveUserToRoleDto {
+  userId: string;
+  sourceRoleId: string;
+  targetRoleId: string;
+  userName?: string;
+  sourceRoleName?: string;
+  targetRoleName?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +28,22 @@ export class UserManagmentService {
   getRolesWithUserCount() {
     return this.restService.request<void, any>(
       { method: 'GET', url: '/api/user-managment/roles-with-user-count' },
+      { apiName: this.apiName }
+    );
+  }
+
+  // Specific functionality: Move user from one role to another (keeping in both roles)
+  moveUserToRole(input: MoveUserToRoleDto) {
+    return this.restService.request<MoveUserToRoleDto, void>(
+      { method: 'POST', url: '/api/user-managment/roles-with-user-count/move-user-to-role', body: input },
+      { apiName: this.apiName }
+    );
+  }
+
+  // Get users in a specific role
+  getUsersInRole(roleId: string) {
+    return this.restService.request<void, any>(
+      { method: 'GET', url: `/api/user-managment/roles-with-user-count/${roleId}/users` },
       { apiName: this.apiName }
     );
   }
