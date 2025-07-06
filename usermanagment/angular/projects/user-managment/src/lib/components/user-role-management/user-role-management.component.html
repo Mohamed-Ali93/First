@@ -1,0 +1,148 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Roles List -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Roles</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center my-3">
+            <span>Loading roles...</span>
+          </div>
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+          </div>
+          <div *ngIf="!loading && !error">
+            <div class="list-group role-list">
+              <button
+                *ngFor="let role of roles"
+                class="list-group-item list-group-item-action role-item"
+                [class.active]="selectedRole?.id === role.id"
+                (click)="onRoleSelect(role)">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-users role-icon me-2"></i>
+                  <span class="role-name flex-grow-1">{{ role.name }}</span>
+                  <span *ngIf="role.userCount !== undefined" class="badge bg-secondary ms-2">{{ role.userCount }}</span>
+                  <span *ngIf="role.isDefault" class="badge bg-success ms-2">Default</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Users in Role: {{ selectedRole?.name || 'Select a role' }}</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="!selectedRole" class="text-center my-5">
+            <p class="text-muted">Please select a role to view its users</p>
+          </div>
+          
+          <div *ngIf="selectedRole">
+            <div *ngIf="loading" class="text-center my-3">
+              <span>Loading users...</span>
+            </div>
+            <div *ngIf="error" class="alert alert-danger">
+              {{ error }}
+            </div>
+            <div *ngIf="!loading && !error">
+              <div *ngIf="users.length === 0" class="text-center my-5">
+                <p class="text-muted">No users found in this role</p>
+              </div>
+              
+              <div *ngIf="users.length > 0">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of users">
+                        <td>{{ user.userName }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                          <button 
+                            class="btn btn-sm btn-primary" 
+                            (click)="openMoveUserModal(user, selectedRole)"
+                            title="Move to another role">
+                            <i class="fa fa-exchange-alt me-1"></i>
+                            Move
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Move User Modal -->
+<div *ngIf="isMoveModalVisible" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form (ngSubmit)="moveUserToRole()" [formGroup]="moveUserForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Move User to Another Role</h5>
+          <button type="button" class="btn-close" (click)="closeMoveModal()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">User</label>
+            <input type="text" class="form-control" [value]="selectedUser?.userName" readonly />
+          </div>
+          <div class="mb-3">
+            <label for="sourceRole" class="form-label">Source Role</label>
+            <select id="sourceRole" class="form-select" formControlName="sourceRoleId" required>
+              <option value="">Select a source role</option>
+              <option *ngFor="let role of roles" [value]="role.id">
+                {{ role.name }}
+              </option>
+            </select>
+            <div *ngIf="moveUserForm.get('sourceRoleId')?.invalid && moveUserForm.get('sourceRoleId')?.touched" class="invalid-feedback d-block">
+              Please select a source role.
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="targetRole" class="form-label">Target Role</label>
+            <select id="targetRole" class="form-select" formControlName="targetRoleId" required>
+              <option value="">Select a target role</option>
+              <option *ngFor="let role of roles" [value]="role.id" [disabled]="role.id === moveUserForm.get('sourceRoleId')?.value">
+                {{ role.name }}
+              </option>
+            </select>
+            <div *ngIf="moveUserForm.get('targetRoleId')?.invalid && moveUserForm.get('targetRoleId')?.touched" class="invalid-feedback d-block">
+              Please select a target role.
+            </div>
+          </div>
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle me-2"></i>
+            The user will be added to the target role while remaining in the source role.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeMoveModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="moveUserForm.invalid || loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+            Move User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

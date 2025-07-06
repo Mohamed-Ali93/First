@@ -20,6 +20,14 @@ const routes: Routes = [
         path: 'roles-with-user-count',
         loadComponent: () => import('./components/roles-with-user-count/roles-with-user-count.component').then(m => m.RolesWithUserCountComponent),
       },
+      {
+        path: 'custom-role',
+        loadComponent: () => import('./components/identity/roles/custom-role/custom-role.component').then(m => m.CustomRoleComponent),
+      },
+      {
+        path: 'user-role-management',
+        loadComponent: () => import('./components/user-role-management/user-role-management.component').then(m => m.UserRoleManagementComponent),
+      },
     ],
   },
 ];

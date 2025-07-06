@@ -1,0 +1,145 @@
+<abp-page [title]="'AbpIdentity::Roles' | abpLocalization">
+  <!-- Custom header bar with title and New role button -->
+  <div class="d-flex justify-content-between align-items-center px-4 custom-header">
+    <h1 class="custom-header-title">Roles</h1>
+    <button class="btn btn-primary custom-header-button" (click)="add()">
+      <i class="fa fa-plus me-2"></i>
+      New role
+    </button>
+  </div>
+  <!-- Card/table area below -->
+  <div class="card custom-table">
+    <div class="card-body p-0">
+      <table class="table mb-0 align-middle">
+        <thead class="custom-table-header">
+          <tr>
+            <th class="custom-table-header">Actions</th>
+            <th class="custom-table-header">Role Name <span class="sort-icon">&#9660;</span></th>
+            <th class="custom-table-header">User Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of data.items" class="custom-table-row">
+            <td class="custom-table-row">
+              <div ngbDropdown>
+                <button ngbDropdownToggle type="button" class="btn btn-sm btn-primary custom-dropdown-toggle">
+                  <i class="fa fa-gear me-1"></i>
+                  Actions
+                </button>
+                <div ngbDropdownMenu>
+                  <button ngbDropdownItem class="custom-dropdown-item" (click)="edit(item.id)"><i class="fa fa-edit me-2"></i>Edit</button>
+                  <button ngbDropdownItem class="custom-dropdown-item" (click)="openPermissionsModal(item.id)"><i class="fa fa-key me-2"></i>Permissions</button>
+                  <button ngbDropdownItem class="custom-dropdown-item text-danger" (click)="delete(item.id, item.name)"><i class="fa fa-trash me-2"></i>Delete</button>
+                  <button ngbDropdownItem class="custom-dropdown-item text-primary" (click)="openMoveAllUsersModal(item)"><i class="fa fa-users me-2"></i>Move All Users</button>
+                </div>
+              </div>
+            </td>
+            <td class="custom-role-name">
+              {{ item.name }}
+              <span *ngIf="item.isPublic" class="badge rounded-pill bg-info custom-public-badge">Public</span>
+            </td>
+            <td class="text-center">
+              <div class="user-count-container">
+                <span *ngIf="loadingUserCounts" class="spinner-border spinner-border-sm user-count-spinner"></span>
+                <span *ngIf="!loadingUserCounts" class="badge rounded-pill user-count-badge" 
+                      [ngClass]="{
+                        'has-users': item.userCount && item.userCount > 0,
+                        'no-users': !item.userCount || item.userCount === 0
+                      }"
+                      [title]="(item.userCount || 0) + ' user' + ((item.userCount || 0) === 1 ? '' : 's') + ' assigned to this role'">
+                  <i class="fa fa-users user-count-icon"></i>
+                  {{ item.userCount || 0 }}
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="custom-table-footer">
+        {{ data.totalCount }} total
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="form" class="modal custom-modal" tabindex="-1" [ngClass]="{ 'show modal-visible': isModalVisible }">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ selected?.id ? 'Edit' : 'New Role' }}</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="isModalVisible = false"></button>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="save()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="roleName" class="form-label custom-form-label">Name</label>
+              <input id="roleName" class="form-control custom-form-control" formControlName="name" [class.is-invalid]="form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)" required maxlength="64" />
+              <div *ngIf="form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)" class="custom-invalid-feedback">
+                <div *ngIf="form.get('name')?.errors?.['required']">Name is required.</div>
+                <div *ngIf="form.get('name')?.errors?.['maxlength']">Name cannot be longer than 64 characters.</div>
+              </div>
+            </div>
+            <div class="form-check custom-form-check">
+              <input id="isDefault" type="checkbox" class="form-check-input" formControlName="isDefault" />
+              <label for="isDefault" class="form-check-label">Is Default</label>
+            </div>
+            <div class="form-check custom-form-check">
+              <input id="isPublic" type="checkbox" class="form-check-input" formControlName="isPublic" />
+              <label for="isPublic" class="form-check-label">Is Public</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary custom-btn" (click)="isModalVisible = false" [disabled]="modalBusy">Cancel</button>
+            <button type="submit" class="btn btn-primary custom-btn" [disabled]="modalBusy || form.invalid">
+              <span *ngIf="modalBusy" class="spinner-border spinner-border-sm me-1"></span>
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <abp-permission-management
+    *ngIf="visiblePermissions"
+    [providerName]="'R'"
+    [providerKey]="providerKey"
+    [visible]="visiblePermissions"
+    (visibleChange)="onVisiblePermissionChange($event)"
+    [hideBadges]="true"
+  >
+  </abp-permission-management>
+
+  <!-- Move All Users Modal -->
+  <div *ngIf="moveAllModalVisible" class="modal custom-modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Move All Users from Role: {{ moveAllSourceRole?.name }}</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="moveAllModalVisible = false"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="moveAllTargetRole" class="form-label">Target Role</label>
+            <select id="moveAllTargetRole" class="form-select" [(ngModel)]="moveAllTargetRoleId" name="moveAllTargetRoleId" required>
+              <option value="">Select a target role</option>
+              <option *ngFor="let role of data.items" [value]="role.id" [disabled]="role.id === moveAllSourceRole?.id">
+                {{ role.name }}
+              </option>
+            </select>
+          </div>
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle me-2"></i>
+            All users in <b>{{ moveAllSourceRole?.name }}</b> will be added to the selected target role. Users will remain in the source role.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary custom-btn" (click)="moveAllModalVisible = false" [disabled]="moveAllBusy">Cancel</button>
+          <button type="button" class="btn btn-primary custom-btn" (click)="moveAllUsersToRole()" [disabled]="moveAllBusy || !moveAllTargetRoleId">
+            <span *ngIf="moveAllBusy" class="spinner-border spinner-border-sm me-1"></span>
+            Move All Users
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</abp-page>

@@ -10,6 +10,7 @@ public class UserManagmentPermissionDefinitionProvider : PermissionDefinitionPro
     {
         var myGroup = context.AddGroup(UserManagmentPermissions.GroupName, L("Permission:UserManagment"));
         myGroup.AddPermission(UserManagmentPermissions.SecurityLogs, L("Permission:SecurityLogs"));
+        myGroup.AddPermission(UserManagmentPermissions.UserRoleManagement, L("Permission:UserRoleManagement"));
     }
 
     private static LocalizableString L(string name)
